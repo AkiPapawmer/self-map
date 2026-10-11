@@ -1,0 +1,1653 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f5f4ef">
+<title>自我地图 · 自我探索</title>
+
+<style>
+:root {
+  --bg: #f5f4ef;
+  --paper: #fbfaf6;
+  --text: #282e29;
+  --muted: #777e75;
+  --green: #617b65;
+  --green-light: #e5e9df;
+  --line: #dedfd5;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+.page {
+  width: 100%;
+  max-width: 520px;
+  min-height: 100vh;
+  margin: auto;
+  padding: 0 24px 30px;
+}
+
+header {
+  height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.header-note {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: block;
+}
+
+.eyebrow {
+  color: var(--green);
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-top: 35px;
+}
+
+h1 {
+  margin-top: 20px;
+  font-size: 34px;
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: -1px;
+}
+
+.description {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 2;
+  margin-top: 15px;
+}
+
+.start-visual {
+  margin-top: 30px;
+  padding: 25px 20px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.visual-title {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+.visual-center {
+  margin: 25px auto;
+  width: 90px;
+  height: 90px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: white;
+  background: var(--green);
+  font-size: 14px;
+  letter-spacing: 3px;
+  box-shadow: 0 0 0 12px var(--green-light);
+}
+
+.visual-caption {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 50px;
+  padding: 13px 18px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.primary-button {
+  width: 100%;
+  margin-top: 25px;
+  background: var(--green);
+  color: white;
+  border: 1px solid var(--green);
+}
+
+.secondary-button {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+.note {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+  margin-top: 14px;
+}
+
+.progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 35px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 3px;
+  background: var(--line);
+  margin-top: 13px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--green);
+  transition: width 0.2s ease;
+}
+
+.dimension-label {
+  display: inline-block;
+  margin-top: 35px;
+  padding: 7px 10px;
+  color: var(--green);
+  background: var(--green-light);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.question {
+  margin-top: 20px;
+  font-size: 25px;
+  font-weight: 500;
+  line-height: 1.65;
+}
+
+.question-hint {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.options {
+  display: grid;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  min-height: 54px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.option.selected {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+
+.option-number {
+  width: 25px;
+  height: 25px;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.option.selected .option-number {
+  color: white;
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.navigation {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.navigation button {
+  flex: 1;
+  margin-top: 0;
+}
+
+.navigation .primary-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.result-card {
+  margin-top: 28px;
+  padding: 25px 20px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.result-title {
+  font-size: 20px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.result-text {
+  margin-top: 13px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 2;
+}
+
+.result-count {
+  margin-top: 24px;
+  font-family: Georgia, serif;
+  color: var(--green);
+  font-size: 34px;
+}
+
+footer {
+  margin-top: 38px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: #969b92;
+  font-size: 10px;
+  line-height: 1.9;
+}
+
+
+
+/* 个性化维度洞察 */
+.dimension-insight {
+  margin-top: 13px;
+  padding: 13px 14px;
+  background: var(--soft, #f4f4ee);
+  border-left: 2px solid var(--green);
+}
+.dimension-insight-label {
+  color: var(--green);
+  font-size: 10px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.dimension-insight-row {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.85;
+  color: var(--text);
+}
+.dimension-insight-row strong {
+  font-weight: 600;
+}
+
+/* 六维度报告 */
+
+.report-dimension {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.report-dimension:last-child {
+  border-bottom: none;
+}
+
+.report-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.report-score {
+  color: var(--green);
+  font-family: Georgia, serif;
+  font-size: 18px;
+}
+
+.report-track {
+  height: 4px;
+  margin-top: 11px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.report-bar {
+  height: 100%;
+  background: var(--green);
+}
+
+.report-description {
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.radar-grid {
+  fill: none;
+  stroke: #dedfd5;
+  stroke-width: 1;
+}
+
+.radar-axis {
+  stroke: #dedfd5;
+  stroke-width: 1;
+}
+
+.radar-shape {
+  fill: rgba(97, 123, 101, 0.2);
+  stroke: #617b65;
+  stroke-width: 2;
+}
+
+.radar-dot {
+  fill: #617b65;
+}
+
+.radar-label {
+  fill: #777e75;
+  font-size: 10px;
+}
+
+/* 结果报告增强 */
+.report-intro {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 2;
+}
+
+.insight-label {
+  margin-top: 18px;
+  color: var(--green);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.insight-title {
+  margin-top: 7px;
+  font-size: 17px;
+  line-height: 1.7;
+  font-weight: 500;
+}
+
+.insight-text {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.reflection-prompt {
+  margin-top: 12px;
+  padding: 14px;
+  background: var(--green-light);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.report-score-note {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+
+/* 每日自我观察 */
+.journal-field { margin-top: 18px; }
+.journal-field label { display:block; font-size:13px; margin-bottom:9px; }
+.journal-field select, .journal-field textarea, .journal-field input { font-size:16px; width:100%; padding:12px; border:1px solid var(--line); background:var(--paper); color:var(--text); border-radius:2px; font:inherit; font-size:16px; }
+.journal-field textarea { min-height:88px; resize:vertical; line-height:1.7; }
+.journal-scale { display:grid; grid-template-columns:repeat(5,1fr); gap:7px; }
+.journal-scale button { min-height:42px; border:1px solid var(--line); background:var(--paper); color:var(--text); }
+.journal-scale button.selected { background:var(--green-light); border-color:var(--green); color:var(--green); }
+.journal-entry { padding:15px 0; border-bottom:1px solid var(--line); }
+.journal-entry:last-child { border-bottom:0; }
+.journal-entry-date { font-size:11px; color:var(--green); letter-spacing:.5px; }
+.journal-entry-title { margin-top:6px; font-size:14px; line-height:1.7; }
+.journal-entry-text { margin-top:6px; font-size:12px; line-height:1.8; color:var(--muted); white-space:pre-wrap; overflow-wrap:anywhere; }
+.journal-metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:16px; }
+.journal-metric { padding:14px; background:var(--green-light); }
+.journal-metric strong { display:block; color:var(--green); font-size:25px; font-weight:500; }
+.journal-metric span { display:block; margin-top:5px; font-size:11px; color:var(--muted); }
+.small-button { margin-top:10px; padding:8px 10px; border:1px solid var(--line); background:transparent; color:var(--muted); font-size:11px; }
+.journal-tools { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:12px; }
+.journal-tools button { width:100%; margin:0; min-height:44px; padding:10px 8px; font-size:12px; }
+.weekly-insight { margin-top:14px; padding:15px; background:var(--green-light); font-size:12px; line-height:1.9; }
+.weekly-insight strong { display:block; font-size:13px; margin-bottom:5px; font-weight:600; }
+.entry-delete { margin-top:8px; border:1px solid var(--line); background:transparent; color:var(--muted); padding:6px 9px; font-size:11px; }
+
+@media (max-width: 360px) {
+  .page {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  .question {
+    font-size: 22px;
+  }
+}
+
+input, textarea, select { font-size: 16px; }
+</style>
+</head>
+
+<body>
+<div class="page">
+
+<header>
+  <div class="brand">自我地图</div>
+  <div class="header-note">SELF EXPLORATION</div>
+</header>
+
+<!-- 首页 -->
+<section id="homeScreen" class="screen active">
+  <div class="eyebrow">一场向内的探索</div>
+
+  <h1>你比想象中<br><span style="color:var(--green)">更复杂一些。</span></h1>
+
+  <p class="description">
+    我们习惯用几个词定义自己，却很少真正理解自己。
+    通过一组问题，慢慢看见你的思维方式、行为模式，
+    以及那些尚未被发现的可能性。
+  </p>
+
+  <div class="start-visual">
+    <div class="visual-title">A MAP OF YOURSELF</div>
+    <div class="visual-center">自己</div>
+    <p class="visual-caption">
+      思维 · 情绪 · 价值 · 行动<br>
+      从认识自己开始，而不是急着定义自己。
+    </p>
+  </div>
+
+  <button id="beginButton" class="primary-button">
+    开始认识自己　→
+  </button>
+
+  <button id="clearTestProgressButton" class="secondary-button" style="display:none;width:100%;margin-top:10px">清除未完成的答题进度</button>
+  <p class="note">
+    24 道探索问题 · 6 个观察维度<br>
+    没有标准答案，请按照真实感受作答。
+  </p>
+  <button id="openJournalFromHome" class="secondary-button" style="width:100%;margin-top:14px">每日自我观察　↗</button>
+</section>
+
+<!-- 测试页 -->
+<section id="testScreen" class="screen">
+  <div class="progress-head">
+    <span id="progressText">问题 01 / 24</span>
+    <span id="progressPercent">4%</span>
+  </div>
+
+  <div class="progress-track">
+    <div id="progressFill" class="progress-fill"></div>
+  </div>
+
+  <div id="dimensionLabel" class="dimension-label">自我观察</div>
+
+  <h1 id="questionText" class="question"></h1>
+
+  <p class="question-hint">
+    请根据你在大多数时候的真实表现作答，而不是你希望自己成为的样子。
+  </p>
+
+  <div id="options" class="options"></div>
+
+  <div class="navigation">
+    <button id="prevButton" class="secondary-button">上一题</button>
+    <button id="nextButton" class="primary-button" disabled>下一题 →</button>
+  </div>
+
+  <p class="note">未完成的答案保存在当前浏览器的本机存储中；清除浏览器数据可能使进度丢失。</p>
+</section>
+
+<!-- 每日自我观察 -->
+<section id="journalScreen" class="screen">
+  <div class="eyebrow">持续观察 · 不急着下结论</div>
+  <h1>今天的你，<br><span style="color:var(--green)">过得怎么样？</span></h1>
+  <p class="description">记录不是为了评判自己，而是给今天留下一个真实的坐标。内容保存在当前浏览器的本机存储中。</p>
+  <div class="result-card">
+    <div class="result-title">写下今天</div>
+    <div class="journal-field">
+      <label>今天的整体心情</label>
+      <div id="moodScale" class="journal-scale">
+        <button type="button" data-value="1">1</button><button type="button" data-value="2">2</button><button type="button" data-value="3">3</button><button type="button" data-value="4">4</button><button type="button" data-value="5">5</button>
+      </div><p class="note" style="text-align:left;margin-top:6px">1 = 很低落　　3 = 普通　　5 = 很不错</p>
+    </div>
+    <div class="journal-field">
+      <label>今天的精力水平</label>
+      <div id="energyScale" class="journal-scale">
+        <button type="button" data-value="1">1</button><button type="button" data-value="2">2</button><button type="button" data-value="3">3</button><button type="button" data-value="4">4</button><button type="button" data-value="5">5</button>
+      </div><p class="note" style="text-align:left;margin-top:6px">1 = 很疲惫　　3 = 一般　　5 = 精力充足</p>
+    </div>
+    <div class="journal-field"><label for="journalAction">今天做了什么？</label><textarea maxlength="1000" id="journalAction" placeholder="可以是一件完成的事、一段交流，或一次尝试……"></textarea></div>
+    <div class="journal-field"><label for="journalDiscovery">今天有什么新发现？</label><textarea maxlength="1000" id="journalDiscovery" placeholder="关于自己的感受、习惯、想法，或者一个还没想明白的问题……"></textarea></div>
+    <div class="journal-field"><label for="journalTomorrow">明天想留意的一件小事（选填）</label><input maxlength="200" id="journalTomorrow" type="text" placeholder="例如：午后精力变化时，我在做什么？"></div>
+    <button id="saveJournalButton" class="primary-button">保存今天的记录 ✓</button>
+    <p id="journalStatus" class="note" aria-live="polite">建议写真实的小事，不需要每天都很积极。</p>
+  </div>
+  <div class="result-card">
+    <div class="result-title">你的观察轨迹</div>
+    <p class="report-score-note">记录达到两条后会显示简单均值。它只帮助你回顾近期状态，不代表因果关系或心理诊断。</p>
+    <div id="journalMetrics" class="journal-metrics"></div>
+    <div id="weeklyInsight" class="weekly-insight"><strong>最近的你</strong>记录几天后，这里会帮你回顾近七天的状态。</div>
+    <div id="journalHistory" style="margin-top:14px"></div>
+    <button id="exportJournalButton" class="secondary-button" style="width:100%;margin-top:14px">导出可阅读的记录文本</button>
+    <div class="journal-tools">
+      <button id="backupJournalButton" class="secondary-button">备份记录（JSON）</button>
+      <button id="importJournalButton" class="secondary-button">恢复备份</button>
+    </div>
+    <input id="importJournalFile" type="file" accept=".json,application/json" style="display:none">
+    <button id="clearJournalButton" class="small-button">清空本机记录</button>
+  </div>
+  <button id="backFromJournalButton" class="secondary-button" style="width:100%;margin-top:18px">返回首页</button>
+</section>
+
+<!-- 结果页：补回脚本所需的结果元素 -->
+<section id="resultScreen" class="screen">
+  <div class="eyebrow">探索完成 · 你的自我地图</div>
+  <h1>认识自己，<br><span style="color:var(--green)">不急着定义自己。</span></h1>
+
+  <p id="resultSummary" class="report-intro">
+    你的回答呈现出一些值得继续观察的倾向。它们不是固定标签，而是理解自己的起点。
+  </p>
+
+  <div class="result-card">
+    <div class="result-title">先读懂这张地图</div>
+    <div class="insight-label">较明显的倾向</div>
+    <div id="strongestTitle" class="insight-title"></div>
+    <p id="strongestText" class="insight-text"></p>
+
+    <div class="insight-label">仍保有弹性的地方</div>
+    <div id="balancedTitle" class="insight-title"></div>
+    <p id="balancedText" class="insight-text"></p>
+  </div>
+
+  <div class="result-card">
+    <div class="result-title">你的倾向如何组合</div>
+    <div id="combinationTitle" class="insight-title"></div>
+    <p id="combinationText" class="insight-text"></p>
+    <p class="report-score-note">这是一种基于本次作答的组合观察，不代表因果关系，也不等同于固定人格类型。</p>
+  </div>
+
+  <div class="result-card">
+    <div class="result-title">六个观察维度</div>
+    <p class="report-score-note">分数越接近 100，越偏向各维度的 A 方向；越接近 0，越偏向 B 方向；接近 50 表示相对均衡。不是能力排名，也没有好坏之分。</p>
+    <svg id="radarChart" viewBox="0 0 320 280" width="100%" role="img" aria-label="六维度倾向图"></svg>
+    <div id="dimensionReports"></div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-title">把观察带回生活</div>
+    <p class="result-text">一份报告不能概括完整的你。可以把下面的问题当作一个小小的自我访谈，不必立刻得出答案。</p>
+    <div id="reflectionQuestion" class="reflection-prompt"></div>
+  </div>
+
+  <button id="shareCardButton" class="primary-button">生成结果分享卡片 ↗</button>
+  <div id="shareCardPreview" style="display:none;margin-top:14px"><img id="shareCardImage" alt="六维度结果分享卡片预览" style="display:block;width:100%;height:auto;border:1px solid var(--line)"><a id="shareCardDownload" class="secondary-button" style="display:block;text-align:center;margin-top:12px;text-decoration:none" download="自我地图-探索结果.png">保存图片到手机 ↓</a></div>
+  <p id="shareCardStatus" class="note" aria-live="polite">可以把六个维度整理成一张图片，保存到手机后再自行分享。</p>
+  <button id="restartButton" class="secondary-button">重新探索 ↺</button>
+  <p class="note">这份报告用于自我观察与反思，不是经过正式验证的心理测评，也不能用于诊断。</p>
+</section>
+
+<footer>
+  自我地图 · SELF EXPLORATION<br>
+  通过观察与反思认识自己，不必急着给自己下定义。
+</footer>
+
+</div>
+
+<script>
+"use strict";
+document.title = "自我地图 · 自我探索与每日观察";
+const questions = [
+  {
+    dimension: "社交与能量",
+    reverse: false,
+    text: "经历了忙碌的一天后，独处通常比参加社交活动更能让我恢复精力。"
+  },
+  {
+    dimension: "社交与能量",
+    reverse: true,
+    text: "和熟悉的人深入交流时，我常常会感到精力充沛。"
+  },
+  {
+    dimension: "社交与能量",
+    reverse: false,
+    text: "在陌生的群体中，我通常会先观察，再决定如何参与。"
+  },
+  {
+    dimension: "社交与能量",
+    reverse: true,
+    text: "长时间独处后，我通常会主动寻找机会与别人交流。"
+  },
+  {
+    dimension: "信息与思维",
+    reverse: false,
+    text: "理解一个问题时，我更倾向于关注具体事实和实际细节。"
+  },
+  {
+    dimension: "信息与思维",
+    reverse: true,
+    text: "我经常会从眼前的事情联想到未来的可能性。"
+  },
+  {
+    dimension: "信息与思维",
+    reverse: false,
+    text: "比起抽象的理论，我通常更相信亲身经历和实际证据。"
+  },
+  {
+    dimension: "信息与思维",
+    reverse: true,
+    text: "我喜欢探索事物背后的联系、规律和隐藏含义。"
+  },
+  {
+    dimension: "决策与判断",
+    reverse: false,
+    text: "做重要决定时，我会优先考虑逻辑是否一致、理由是否充分。"
+  },
+  {
+    dimension: "决策与判断",
+    reverse: true,
+    text: "做决定时，我很难忽略它对他人感受和关系的影响。"
+  },
+  {
+    dimension: "决策与判断",
+    reverse: false,
+    text: "即使结论不太受欢迎，只要有充分依据，我也愿意坚持。"
+  },
+  {
+    dimension: "决策与判断",
+    reverse: true,
+    text: "当一个选择会影响重要的人时，我会认真考虑彼此的感受。"
+  },
+  {
+    dimension: "计划与灵活",
+    reverse: false,
+    text: "提前安排好任务和时间，会让我感到更加安心。"
+  },
+  {
+    dimension: "计划与灵活",
+    reverse: true,
+    text: "我更喜欢保留选择空间，根据情况变化调整计划。"
+  },
+  {
+    dimension: "计划与灵活",
+    reverse: false,
+    text: "面对重要任务时，我通常会尽早开始，而不是等到最后。"
+  },
+  {
+    dimension: "计划与灵活",
+    reverse: true,
+    text: "相比严格按照计划行动，我更习惯边做边调整。"
+  },
+  {
+    dimension: "自我觉察",
+    reverse: false,
+    text: "遇到情绪波动时，我通常会尝试弄清楚自己为什么这样感受。"
+  },
+  {
+    dimension: "自我觉察",
+    reverse: true,
+    text: "遇到困扰时，我更倾向于先采取行动，而不是反复思考。"
+  },
+  {
+    dimension: "自我觉察",
+    reverse: false,
+    text: "我能比较清楚地说出自己在意什么，以及原因是什么。"
+  },
+  {
+    dimension: "自我觉察",
+    reverse: true,
+    text: "当事情不顺利时，我通常会先寻找下一步可以做什么。"
+  },
+  {
+    dimension: "价值与选择",
+    reverse: false,
+    text: "面对人生选择时，稳定和可预期性对我来说很重要。"
+  },
+  {
+    dimension: "价值与选择",
+    reverse: true,
+    text: "即使结果不确定，只要有探索价值，我也愿意尝试新方向。"
+  },
+  {
+    dimension: "价值与选择",
+    reverse: false,
+    text: "我愿意为了长期的安全感，放弃一部分短期的自由。"
+  },
+  {
+    dimension: "价值与选择",
+    reverse: true,
+    text: "对我而言，拥有自主决定生活方向的空间非常重要。"
+  }
+];
+
+const choices = [
+  "非常不像我",
+  "比较不像我",
+  "视情况而定",
+  "比较像我",
+  "非常像我"
+];
+
+let currentIndex = 0;
+const answers = Array(questions.length).fill(null);
+const TEST_PROGRESS_KEY = "selfMapTestProgressV1";
+function saveTestProgress() {
+  try { localStorage.setItem(TEST_PROGRESS_KEY, JSON.stringify({ index: currentIndex, answers: answers.slice() })); } catch (e) { /* 私密模式可能不支持存储 */ }
+}
+function restoreTestProgress() {
+  try {
+    const data = JSON.parse(localStorage.getItem(TEST_PROGRESS_KEY) || "null");
+    if (!data || !Array.isArray(data.answers) || data.answers.length !== questions.length) return;
+    data.answers.forEach(function(value, index) { answers[index] = Number.isInteger(value) && value >= 1 && value <= 5 ? value : null; });
+    if (Number.isInteger(data.index) && data.index >= 0 && data.index < questions.length) currentIndex = data.index;
+  } catch (e) { /* 忽略无效的旧数据 */ }
+}
+function clearTestProgress() {
+  currentIndex = 0;
+  answers.fill(null);
+  try { localStorage.removeItem(TEST_PROGRESS_KEY); } catch (e) {}
+}
+restoreTestProgress();
+function updateTestProgressUI() {
+  const clear = document.getElementById("clearTestProgressButton");
+  const hasProgress = answers.some(function(a) { return a !== null; });
+  clear.style.display = hasProgress ? "block" : "none";
+  document.getElementById("beginButton").textContent = hasProgress ? "继续上次探索 →" : "开始认识自己 →";
+}
+document.getElementById("clearTestProgressButton").addEventListener("click", function() {
+  if (!confirm("确定清除尚未完成的答题进度吗？")) return;
+  clearTestProgress();
+  updateTestProgressUI();
+});
+updateTestProgressUI();
+
+const homeScreen = document.getElementById("homeScreen");
+const testScreen = document.getElementById("testScreen");
+const resultScreen = document.getElementById("resultScreen");
+const journalScreen = document.getElementById("journalScreen");
+
+const progressText = document.getElementById("progressText");
+const progressPercent = document.getElementById("progressPercent");
+const progressFill = document.getElementById("progressFill");
+const dimensionLabel = document.getElementById("dimensionLabel");
+const questionText = document.getElementById("questionText");
+const optionsContainer = document.getElementById("options");
+const prevButton = document.getElementById("prevButton");
+const nextButton = document.getElementById("nextButton");
+
+function showScreen(screen) {
+  homeScreen.classList.remove("active");
+  testScreen.classList.remove("active");
+  resultScreen.classList.remove("active");
+  journalScreen.classList.remove("active");
+  screen.classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+function renderQuestion() {
+  const question = questions[currentIndex];
+  if (!question) {
+    questionText.textContent = "暂时找不到这道题，请重新开始。";
+    return;
+  }
+
+  const number = currentIndex + 1;
+  const percent = Math.round(number / questions.length * 100);
+
+  progressText.textContent =
+    "问题 " + String(number).padStart(2, "0") +
+    " / " + questions.length;
+
+  progressPercent.textContent = percent + "%";
+  progressFill.style.width = percent + "%";
+  dimensionLabel.textContent = "自我观察";
+  questionText.textContent = question.text;
+
+  optionsContainer.innerHTML = "";
+
+  choices.forEach(function (choice, index) {
+    const value = index + 1;
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.className = "option";
+    button.setAttribute("aria-pressed", String(answers[currentIndex] === value));
+
+    if (answers[currentIndex] === value) {
+      button.classList.add("selected");
+    }
+
+    const number = document.createElement("span");
+    number.className = "option-number";
+    number.textContent = value;
+
+    const label = document.createElement("span");
+    label.textContent = choice;
+
+    button.appendChild(number);
+    button.appendChild(label);
+
+    button.addEventListener("click", function () {
+      answers[currentIndex] = value;
+      saveTestProgress();
+      optionsContainer.querySelectorAll("button").forEach(function (option, optionIndex) {
+        const chosen = optionIndex === index;
+        option.classList.toggle("selected", chosen);
+        option.setAttribute("aria-pressed", String(chosen));
+      });
+      nextButton.disabled = false;
+    });
+
+    optionsContainer.appendChild(button);
+  });
+
+  prevButton.disabled = currentIndex === 0;
+  prevButton.style.opacity = currentIndex === 0 ? "0.4" : "1";
+
+  nextButton.disabled = answers[currentIndex] === null;
+
+  nextButton.textContent =
+    currentIndex === questions.length - 1
+      ? "完成探索 ✓"
+      : "下一题 →";
+}
+
+const dimensionDefinitions = [
+  {
+    name: "社交与能量",
+    a: "偏向独处恢复",
+    b: "偏向互动恢复",
+    descriptions: [
+      "你的回答更偏向通过独处恢复精力，也许需要一定的个人空间来整理状态。",
+      "你的回答更偏向通过与人互动恢复精力，交流可能是你获得活力的一种方式。",
+      "你在独处与互动方面没有呈现出明显的单侧倾向，具体感受可能随情境变化。"
+    ]
+  },
+  {
+    name: "信息与思维",
+    a: "偏向具体与事实",
+    b: "偏向抽象与可能",
+    descriptions: [
+      "你的回答更偏向具体事实和实际细节，处理问题时可能更重视可观察的信息。",
+      "你的回答更偏向联系、规律和未来可能性，可能会主动思考事物背后的含义。",
+      "你在具体信息与抽象联想之间没有呈现出明显的单侧倾向。"
+    ]
+  },
+  {
+    name: "决策与判断",
+    a: "偏向逻辑与一致性",
+    b: "偏向关系与感受",
+    descriptions: [
+      "你的回答更偏向逻辑、依据和判断的一致性，做决定时可能会重视理由是否充分。",
+      "你的回答更偏向关系和他人的感受，做决定时可能会考虑选择对人的影响。",
+      "你在逻辑依据与关系感受之间没有呈现出明显的单侧倾向。"
+    ]
+  },
+  {
+    name: "计划与灵活",
+    a: "偏向计划与安排",
+    b: "偏向弹性与调整",
+    descriptions: [
+      "你的回答更偏向提前安排和明确计划，清晰的步骤可能有助于你推进任务。",
+      "你的回答更偏向保留弹性并根据情况调整，灵活空间可能对你比较重要。",
+      "你在计划与灵活之间没有呈现出明显的单侧倾向。"
+    ]
+  },
+  {
+    name: "自我觉察",
+    a: "偏向反思与理解",
+    b: "偏向行动与应对",
+    descriptions: [
+      "你的回答更偏向理解情绪和反思原因，弄清楚发生了什么可能对你很重要。",
+      "你的回答更偏向先行动、寻找下一步，采取实际行动可能有助于你应对困扰。",
+      "你在反思理解与行动应对之间没有呈现出明显的单侧倾向。"
+    ]
+  },
+  {
+    name: "价值与选择",
+    a: "偏向稳定与可预期",
+    b: "偏向自主与探索",
+    descriptions: [
+      "你的回答更偏向稳定与可预期性，明确的边界和安全感可能是重要的考虑因素。",
+      "你的回答更偏向自主与探索，拥有选择空间、尝试新方向可能对你很重要。",
+      "你在稳定与探索之间没有呈现出明显的单侧倾向。"
+    ]
+  }
+];
+
+
+
+// 六个维度各自的优势、留意点与小行动。文案是反思提示，不是诊断结论。
+const dimensionInsights = [
+  {
+    a: { strength: "独处可能给你留出整理思绪、恢复精力的空间。", watch: "如果总是独自消化，也可能错过向别人求助或分享的机会。", action: "观察一次社交后的状态：你需要安静多久才能恢复？", question: "独处对你来说是在充电，还是有时也变成了回避？" },
+    b: { strength: "互动可能帮助你获得灵感、动力，或在交流中理清想法。", watch: "如果一直被外界节奏带着走，可能较难察觉自己真正需要什么。", action: "下一次交流后，留两分钟记录：什么让你有能量，什么让你疲惫？", question: "你是在享受交流本身，还是需要他人的回应来确认自己的想法？" }
+  },
+  {
+    a: { strength: "关注具体事实与细节，可能帮助你把事情落到现实条件上。", watch: "过度依赖眼前可见的信息时，也可能低估尚未出现的可能性。", action: "做决定时，先列出已知事实，再补写一个你还没验证的可能。", question: "你重视的细节帮助你看清了问题，还是让你暂时看不到全局？" },
+    b: { strength: "联想规律和可能性，可能帮助你发现新的路径与不同解释。", watch: "如果想法一直停留在可能性上，执行时可能缺少具体落点。", action: "把一个有趣的想法拆成一个今天就能验证的小步骤。", question: "你想到的可能性里，哪一个有证据支持，哪一个仍只是猜想？" }
+  },
+  {
+    a: { strength: "重视理由与一致性，可能帮助你拆解问题并保持判断标准。", watch: "如果只强调结论是否合理，别人感受到的情绪和关系影响也可能被忽略。", action: "表达判断时，同时说清依据，以及这个决定会怎样影响相关的人。", question: "你认为合理的选择，是否也照顾到了真实的人和处境？" },
+    b: { strength: "注意关系和他人感受，可能帮助你理解不同立场并维护连接。", watch: "如果过度顾及所有人的感受，自己的需求和边界也可能被放到后面。", action: "做一个关系相关的决定前，分别写下“对方需要什么”和“我需要什么”。", question: "你是在主动体谅别人，还是因为担心冲突而难以表达自己？" }
+  },
+  {
+    a: { strength: "提前安排可能让任务更清晰，降低临时决定带来的负担。", watch: "计划一旦变成必须照做的标准，变化可能更容易带来挫败感。", action: "给下一项计划留出一个可调整的时间段，并提前想好替代方案。", question: "你的计划是在支持你，还是已经让你不敢改变方向？" },
+    b: { strength: "保留弹性可能让你更容易应对变化，也能根据新信息及时调整。", watch: "如果每一步都等到当下再决定，重要任务可能容易被拖延或打断。", action: "为一件重要的事确定一个最小起步时间，其余步骤允许灵活调整。", question: "你是在有意识地灵活调整，还是因为不想被安排而迟迟没有开始？" }
+  },
+  {
+    a: { strength: "愿意理解情绪与原因，可能帮助你从经历中发现反复出现的模式。", watch: "反思如果没有落到行动上，可能变成反复琢磨同一个问题。", action: "每次反思最后补一句：我下一步能做的一件小事是什么？", question: "这次思考让你更理解自己了吗？它有没有带来新的行动？" },
+    b: { strength: "先行动、再调整，可能帮助你在不确定时打破停滞。", watch: "如果太快进入解决问题的状态，某些情绪或根本原因可能还没被看见。", action: "开始行动前先用一句话说出自己的感受，再决定下一步。", question: "行动确实让事情前进了吗？有没有什么感受需要之后再认真听一听？" }
+  },
+  {
+    a: { strength: "重视稳定和可预期性，可能帮助你建立可靠的节奏与安全边界。", watch: "当熟悉感成为唯一标准时，一些值得尝试的新机会可能被提前排除。", action: "在保持基本安全的前提下，选一件低风险的小事尝试新做法。", question: "你坚持的是对自己重要的稳定，还是只是因为变化让人不舒服？" },
+    b: { strength: "重视自主和探索，可能帮助你主动寻找选择空间与新体验。", watch: "如果不断追求新方向，长期投入和稳定积累可能更难持续。", action: "选一个值得探索的方向，给自己设定一个短周期的持续尝试。", question: "这个新选择与你重视的东西有关，还是只是因为它更新鲜？" }
+  }
+];
+
+function getDimensionBand(score) {
+  if (score >= 75) return "本次回答呈现出较明显的倾向";
+  if (score >= 60) return "本次回答呈现出一定倾向";
+  if (score <= 25) return "本次回答呈现出较明显的倾向";
+  if (score <= 40) return "本次回答呈现出一定倾向";
+  return "本次回答相对均衡";
+}
+
+function getDimensionInsight(score, index) {
+  if (score > 40 && score < 60) {
+    return {
+      band: "本次回答相对均衡",
+      strength: "两种方向都可能在不同情境中为你提供帮助。",
+      watch: "单次回答不足以判断你更适合哪一种方式。",
+      action: "留意一周内两种不同情境下自己的实际选择。",
+      question: "什么时候你更接近其中一端，什么时候又会改变？",
+      note: "这一维度没有明显的单侧倾向，不宜套用任何一端的描述。"
+    };
+  }
+  const sideKey = score >= 60 ? "a" : "b";
+  const content = dimensionInsights[index][sideKey];
+  const band = getDimensionBand(score);
+  let note = "";
+  if (score > 40 && score < 60) {
+    note = "你的分数靠近中间位置，下面的内容只是一个观察角度；不必把任一侧描述直接套用到自己身上。";
+  } else if (score >= 75 || score <= 25) {
+    note = "这个方向在本次回答中更突出，但不代表你在所有场景里都会如此。";
+  } else {
+    note = "这是一种倾向而非固定标签，具体情境可能改变你的选择。";
+  }
+  return { band: band, strength: content.strength, watch: content.watch, action: content.action, question: content.question, note: note };
+}
+
+// 每组四题中，第 2、4 题为反向计分题。
+// 先把反向题转换，再计算 0—100 的倾向分。
+function calculateDimensionScores() {
+  return dimensionDefinitions.map(function (dimension, index) {
+    const start = index * 4;
+    const group = answers.slice(start, start + 4);
+
+    const adjusted = group.map(function (answer, questionIndex) {
+      if (questions[start + questionIndex].reverse) {
+        return 6 - answer;
+      }
+      return answer;
+    });
+
+    const mean = adjusted.reduce(function (sum, value) {
+      return sum + value;
+    }, 0) / adjusted.length;
+
+    return Math.round((mean - 1) * 25);
+  });
+}
+
+function getDimensionDescription(score, definition) {
+  if (score >= 60) {
+    return definition.descriptions[0];
+  }
+
+  if (score <= 40) {
+    return definition.descriptions[1];
+  }
+
+  return definition.descriptions[2];
+}
+
+function drawRadarChart(scores) {
+  const svg = document.getElementById("radarChart");
+  const ns = "http://www.w3.org/2000/svg";
+
+  svg.innerHTML = "";
+
+  const cx = 160;
+  const cy = 140;
+  const radius = 83;
+  const count = scores.length;
+  const angles = scores.map(function (_, index) {
+    return -Math.PI / 2 + index * 2 * Math.PI / count;
+  });
+
+  function point(angle, r) {
+    return [
+      cx + Math.cos(angle) * r,
+      cy + Math.sin(angle) * r
+    ];
+  }
+
+  function polygonPoints(values) {
+    return values.map(function (value, index) {
+      const p = point(angles[index], radius * value);
+      return p[0] + "," + p[1];
+    }).join(" ");
+  }
+
+  function add(tag, attributes, content) {
+    const element = document.createElementNS(ns, tag);
+
+    Object.keys(attributes).forEach(function (key) {
+      element.setAttribute(key, attributes[key]);
+    });
+
+    if (content !== undefined) {
+      element.textContent = content;
+    }
+
+    svg.appendChild(element);
+    return element;
+  }
+
+  [0.25, 0.5, 0.75, 1].forEach(function (scale) {
+    add("polygon", {
+      points: polygonPoints(Array(count).fill(scale)),
+      class: "radar-grid"
+    });
+  });
+
+  angles.forEach(function (angle) {
+    const p = point(angle, radius);
+
+    add("line", {
+      x1: cx,
+      y1: cy,
+      x2: p[0],
+      y2: p[1],
+      class: "radar-axis"
+    });
+  });
+
+  const normalized = scores.map(function (score) {
+    return score / 100;
+  });
+
+  add("polygon", {
+    points: polygonPoints(normalized),
+    class: "radar-shape"
+  });
+
+  scores.forEach(function (score, index) {
+    const p = point(angles[index], radius * score / 100);
+
+    add("circle", {
+      cx: p[0],
+      cy: p[1],
+      r: 3,
+      class: "radar-dot"
+    });
+  });
+
+  const shortNames = [
+    "社交能量",
+    "信息思维",
+    "决策判断",
+    "计划灵活",
+    "自我觉察",
+    "价值选择"
+  ];
+
+  angles.forEach(function (angle, index) {
+    const p = point(angle, radius + 23);
+
+    let anchor = "middle";
+    if (p[0] < cx - 8) anchor = "end";
+    if (p[0] > cx + 8) anchor = "start";
+
+    add("text", {
+      x: p[0],
+      y: p[1] + 3,
+      "text-anchor": anchor,
+      class: "radar-label"
+    }, shortNames[index]);
+  });
+}
+
+function renderResults() {
+  const scores = calculateDimensionScores();
+
+  drawRadarChart(scores);
+
+  const reports = document.getElementById("dimensionReports");
+  reports.innerHTML = "";
+
+  scores.forEach(function (score, index) {
+    const definition = dimensionDefinitions[index];
+    const side = score >= 60 ? definition.a : score <= 40 ? definition.b : "相对均衡";
+    const description = getDimensionDescription(score, definition);
+
+    const item = document.createElement("div");
+    item.className = "report-dimension";
+
+    const heading = document.createElement("div");
+    heading.className = "report-heading";
+
+    const name = document.createElement("span");
+    name.textContent = definition.name + " · " + side;
+
+    const scoreText = document.createElement("span");
+    scoreText.className = "report-score";
+    scoreText.textContent = score;
+
+    heading.appendChild(name);
+    heading.appendChild(scoreText);
+
+    const track = document.createElement("div");
+    track.className = "report-track";
+
+    const bar = document.createElement("div");
+    bar.className = "report-bar";
+    bar.style.width = score + "%";
+
+    track.appendChild(bar);
+
+    const text = document.createElement("p");
+    text.className = "report-description";
+    text.textContent = description;
+
+    item.appendChild(heading);
+    item.appendChild(track);
+    item.appendChild(text);
+
+    const insightData = getDimensionInsight(score, index);
+    const insight = document.createElement("div");
+    insight.className = "dimension-insight";
+
+    const insightLabel = document.createElement("div");
+    insightLabel.className = "dimension-insight-label";
+    insightLabel.textContent = insightData.band;
+    insight.appendChild(insightLabel);
+
+    [
+      ["可能的帮助", insightData.strength],
+      ["值得留意", insightData.watch],
+      ["可以尝试", insightData.action],
+      ["问问自己", insightData.question],
+      ["理解边界", insightData.note]
+    ].forEach(function (entry) {
+      const row = document.createElement("div");
+      row.className = "dimension-insight-row";
+      const label = document.createElement("strong");
+      label.textContent = entry[0] + "：";
+      row.appendChild(label);
+      row.appendChild(document.createTextNode(entry[1]));
+      insight.appendChild(row);
+    });
+
+    item.appendChild(insight);
+    reports.appendChild(item);
+  });
+
+  // 离 50 越远，代表本次回答越偏向某一侧；接近 50 则相对均衡。
+  const ranked = scores.map(function (score, index) {
+    return { score: score, index: index, distance: Math.abs(score - 50) };
+  }).sort(function (a, b) { return b.distance - a.distance; });
+
+  const strongest = ranked[0].index;
+  const secondStrongest = ranked[1].index;
+  const balanced = ranked[ranked.length - 1].index;
+  const strongDefinition = dimensionDefinitions[strongest];
+  const secondDefinition = dimensionDefinitions[secondStrongest];
+  const balancedDefinition = dimensionDefinitions[balanced];
+  const strongSide = scores[strongest] >= 50 ? strongDefinition.a : strongDefinition.b;
+  const secondSide = scores[secondStrongest] >= 50 ? secondDefinition.a : secondDefinition.b;
+  const balancedSide = scores[balanced] >= 50 ? balancedDefinition.a : balancedDefinition.b;
+  const strongestDistance = Math.abs(scores[strongest] - 50);
+  const allBalanced = scores.every(function(score) { return score > 40 && score < 60; });
+
+  let intensityText;
+  if (strongestDistance >= 35) {
+    intensityText = "这次回答在这个方向上比较鲜明。它可以作为你观察自己的一条重要线索，但仍值得用真实经历核对。";
+  } else if (strongestDistance >= 20) {
+    intensityText = "这次回答呈现出一定倾向，但并非没有弹性。不同的人、任务和环境，可能会带出你不同的一面。";
+  } else {
+    intensityText = "六个维度的分数整体比较靠近中间位置，没有哪一侧特别突出。你可能会根据具体情境切换做法，也可能还在探索自己更偏好的方式。";
+  }
+
+  document.getElementById("resultSummary").textContent = allBalanced
+    ? "本次六个维度的回答都比较靠近中间位置，没有明显的单侧倾向。可以结合不同生活情境继续观察，而不必急着归类。"
+    :
+    "这份地图不急着给你一个类型，而是整理你在六个方面的当前回答。「" +
+    strongDefinition.name + "」的方向相对明显；同时，" + balancedDefinition.name +
+    "更接近中间位置。它们只是此刻的线索，你可以结合真实生活判断哪些描述贴近自己。";
+
+  document.getElementById("strongestTitle").textContent = allBalanced
+    ? "本次没有特别突出的单侧倾向"
+    : strongDefinition.name + " · " + strongSide;
+
+  document.getElementById("strongestText").textContent = allBalanced
+    ? "你的回答在多个方向之间保留了弹性。这并不意味着缺少特点；可以在具体经历中继续观察自己的选择。"
+    : getDimensionDescription(scores[strongest], strongDefinition) + " " + intensityText +
+      "不必把它当作必须维持的形象；如果某些时候你表现得相反，也不代表你不够一致。";
+
+  document.getElementById("balancedTitle").textContent =
+    balancedDefinition.name + " · 相对接近中间位置";
+
+  document.getElementById("balancedText").textContent =
+    "你在这个维度上的回答没有明显偏向某一端。与其把它理解为犹豫或缺少特点，不如观察情境：什么事情、哪些人或什么压力，会让你更自然地靠向其中一边？";
+
+  document.getElementById("combinationTitle").textContent = allBalanced
+    ? "在不同情境中观察自己的选择"
+    : strongDefinition.name + " × " + secondDefinition.name;
+
+  document.getElementById("combinationText").textContent = allBalanced
+    ? "目前没有足够突出的两个方向可以组合解读。试着回想最近的两次不同选择，观察环境、关系和任务如何影响了你的做法。"
+    : "除了「" + strongDefinition.name + "」上的「" + strongSide + "」，你的第二条线索来自「" +
+    secondDefinition.name + "」上的「" + secondSide + "」。可以把这两条线索放在一起观察：当你处理一件重要的事时，" +
+    "这两种偏好会互相支持，还是偶尔让你陷入拉扯？例如，回想一次最近的选择，分别看看你当时如何获取信息、如何作决定，以及最终结果是否符合自己的期待。";
+
+  document.getElementById("reflectionQuestion").textContent = allBalanced
+    ? "最近有哪些情境让你表现出不同的一面？哪些变化来自自己的主动选择，哪些可能来自环境？"
+    : "关于「" + strongDefinition.name + "」，回想最近一次让你印象深刻的经历：你当时是怎样做选择的？这种方式帮到了你什么，又有什么代价？如果下次遇到类似情境，你还会做同样的选择吗？";
+}
+
+
+// 每日记录：尽可能使用本机 localStorage，不上传任何内容。
+const JOURNAL_KEY = "selfMapDailyJournalV1";
+let selectedMood = 0;
+let selectedEnergy = 0;
+function loadJournalEntries() {
+  try { const data = JSON.parse(localStorage.getItem(JOURNAL_KEY) || "[]"); return Array.isArray(data) ? data : []; }
+  catch (e) { return []; }
+}
+function saveJournalEntries(entries) {
+  try { localStorage.setItem(JOURNAL_KEY, JSON.stringify(entries)); return true; }
+  catch (e) { return false; }
+}
+function setupScale(id, kind) {
+  const container = document.getElementById(id);
+  container.querySelectorAll("button").forEach(function (button) {
+    button.addEventListener("click", function () {
+      const value = Number(button.dataset.value);
+      if (kind === "mood") selectedMood = value; else selectedEnergy = value;
+      container.querySelectorAll("button").forEach(function (b) { b.classList.toggle("selected", b === button); b.setAttribute("aria-pressed", String(b === button)); });
+    });
+  });
+}
+["moodScale", "energyScale"].forEach(function(id) {
+  document.getElementById(id).querySelectorAll("button").forEach(function(b) { b.setAttribute("aria-pressed", "false"); });
+});
+setupScale("moodScale", "mood");
+setupScale("energyScale", "energy");
+function isValidJournalEntry(e) {
+  if (!e || typeof e.date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(e.date)) return false;
+  const timestamp = Number(e.timestamp);
+  if (!Number.isSafeInteger(timestamp) || timestamp < 0 || timestamp > Date.now() + 86400000) return false;
+  const date = new Date(timestamp);
+  if (!Number.isFinite(date.getTime())) return false;
+  const key = date.getFullYear() + "-" + String(date.getMonth()+1).padStart(2,"0") + "-" + String(date.getDate()).padStart(2,"0");
+  return key === e.date && Number.isInteger(Number(e.mood)) && Number(e.mood) >= 1 && Number(e.mood) <= 5 && Number.isInteger(Number(e.energy)) && Number(e.energy) >= 1 && Number(e.energy) <= 5;
+}
+function escapeHTML(value) {
+  return String(value || "").replace(/[&<>"']/g, function (ch) { return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[ch]; });
+}
+function renderJournal() {
+  const entries = loadJournalEntries().filter(function(e) { return isValidJournalEntry(e); }).sort(function (a,b) { return b.timestamp - a.timestamp; });
+  const metrics = document.getElementById("journalMetrics");
+  const history = document.getElementById("journalHistory");
+  const weekly = document.getElementById("weeklyInsight");
+  if (!entries.length) {
+    metrics.innerHTML = '<div class="journal-metric"><strong>0</strong><span>累计记录</span></div><div class="journal-metric"><strong>—</strong><span>平均心情 / 精力</span></div>';
+    history.innerHTML = '<p class="report-score-note">这里还没有记录。写下第一条后，你就开始建立自己的观察轨迹。</p>';
+    weekly.innerHTML = '<strong>最近的你</strong>记录几天后，这里会总结近七天的心情与精力变化。你也可以随时导出备份，避免更换浏览器后丢失记录。';
+    return;
+  }
+  const avgMood = entries.reduce(function (s,e) { return s + Number(e.mood || 0); }, 0) / entries.length;
+  const avgEnergy = entries.reduce(function (s,e) { return s + Number(e.energy || 0); }, 0) / entries.length;
+  metrics.innerHTML = '<div class="journal-metric"><strong>' + entries.length + '</strong><span>累计记录</span></div><div class="journal-metric"><strong>' + (entries.length >= 2 ? avgMood.toFixed(1) + ' / ' + avgEnergy.toFixed(1) : '—') + '</strong><span>' + (entries.length >= 2 ? '平均心情 / 精力（1—5）' : '至少记录两天后显示均值') + '</span></div>';
+  const cutoff = new Date(); cutoff.setHours(0,0,0,0); cutoff.setDate(cutoff.getDate()-6);
+  const recent = entries.filter(function(e){ const d = new Date(e.timestamp); d.setHours(0,0,0,0); return d >= cutoff; });
+  if (recent.length >= 2) {
+    const rm = recent.reduce(function(s,e){return s + Number(e.mood || 0);},0)/recent.length;
+    const re = recent.reduce(function(s,e){return s + Number(e.energy || 0);},0)/recent.length;
+    let observation = "最近七天的记录还不多，先持续观察，不急着解释原因。";
+    if (recent.length >= 2) {
+      if (rm - re >= 0.8) observation = "近七天心情平均分高于精力。可以留意：心情不错时，身体是否仍然容易疲惫？";
+      else if (re - rm >= 0.8) observation = "近七天精力平均分高于心情。可以留意：即使有力气行动，是否仍有事情影响着你的感受？";
+      else if (rm >= 4 && re >= 4) observation = "近七天记录中的心情与精力整体偏高。回想一下，哪些作息、活动或关系让这段时间更顺畅？";
+      else if (rm <= 2.5 && re <= 2.5) observation = "近七天记录中的心情与精力整体偏低。先关注休息、日常负担和可获得的支持，不必急着责怪自己。";
+      else observation = "近七天心情与精力没有出现很大的均值差异。看看哪些日常安排与状态较好的日子同时出现，但先不要把它们当作因果。";
+    }
+    weekly.innerHTML = '<strong>最近七天 · ' + recent.length + ' 条记录</strong>心情均值 ' + rm.toFixed(1) + '/5 · 精力均值 ' + re.toFixed(1) + '/5<br>' + escapeHTML(observation) + '<p style="margin-top:7px;color:var(--muted)">这是对你填写内容的简单归纳，不是心理诊断；记录只能提供线索，不能单独证明原因。</p>';
+  } else {
+    weekly.innerHTML = '<strong>最近的你</strong>最近七天的有效记录不足两条。可以继续记录，留意心情和精力随生活情境的变化。';
+  }
+  history.innerHTML = entries.slice(0, 12).map(function (e) {
+    const date = new Date(e.timestamp);
+    const dateText = date.getFullYear() + "年" + (date.getMonth()+1) + "月" + date.getDate() + "日";
+    let html = '<article class="journal-entry"><div class="journal-entry-date">' + dateText + ' · 心情 ' + escapeHTML(e.mood) + '/5 · 精力 ' + escapeHTML(e.energy) + '/5</div>';
+    if (e.action) html += '<div class="journal-entry-title">今天做了什么：' + escapeHTML(e.action) + '</div>';
+    if (e.discovery) html += '<div class="journal-entry-text">新发现：' + escapeHTML(e.discovery) + '</div>';
+    if (e.tomorrow) html += '<div class="journal-entry-text">明天留意：' + escapeHTML(e.tomorrow) + '</div>';
+    html += '<button type="button" class="entry-delete" data-entry-date="' + escapeHTML(e.date) + '">删除这条记录</button></article>';
+    return html;
+  }).join("");
+  if (entries.length > 12) history.innerHTML += '<p class="note">当前展示最近 12 条；导出功能可获取全部记录。</p>';
+  history.querySelectorAll(".entry-delete").forEach(function(button) {
+    button.addEventListener("click", function() {
+      const date = button.dataset.entryDate;
+      if (!confirm("确定删除 " + date + " 的记录吗？此操作无法撤销。")) return;
+      const next = loadJournalEntries().filter(function(e){ return e.date !== date; });
+      if (!saveJournalEntries(next)) { document.getElementById("journalStatus").textContent = "删除失败，请检查浏览器存储设置。"; return; }
+      document.getElementById("journalStatus").textContent = "已删除所选记录。";
+      renderJournal();
+    });
+  });
+}
+function openJournal() {
+  renderJournal();
+  const now = new Date();
+  const dateKey = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
+  const today = loadJournalEntries().find(function(e) { return e.date === dateKey; });
+  selectedMood = today ? Number(today.mood) : 0;
+  selectedEnergy = today ? Number(today.energy) : 0;
+  ["mood", "energy"].forEach(function(kind) {
+    const selected = kind === "mood" ? selectedMood : selectedEnergy;
+    document.getElementById(kind + "Scale").querySelectorAll("button").forEach(function(button) {
+      button.classList.toggle("selected", Number(button.dataset.value) === selected);
+      button.setAttribute("aria-pressed", String(Number(button.dataset.value) === selected));
+    });
+  });
+  document.getElementById("journalAction").value = today ? today.action || "" : "";
+  document.getElementById("journalDiscovery").value = today ? today.discovery || "" : "";
+  document.getElementById("journalTomorrow").value = today ? today.tomorrow || "" : "";
+  document.getElementById("journalStatus").textContent = today ? "已载入今天的记录，可以继续修改并保存。" : "";
+  showScreen(journalScreen);
+}
+document.getElementById("openJournalFromHome").addEventListener("click", openJournal);
+document.getElementById("backFromJournalButton").addEventListener("click", function () { showScreen(homeScreen); });
+document.getElementById("saveJournalButton").addEventListener("click", function () {
+  const status = document.getElementById("journalStatus");
+  if (!selectedMood || !selectedEnergy) { status.textContent = "请先选择今天的心情和精力水平。"; return; }
+  const action = document.getElementById("journalAction").value.trim();
+  const discovery = document.getElementById("journalDiscovery").value.trim();
+  const tomorrow = document.getElementById("journalTomorrow").value.trim();
+  if (!action && !discovery && !tomorrow) { status.textContent = "至少写下一件今天发生的事，或一个新发现，再保存会更有意义。"; return; }
+  const entries = loadJournalEntries();
+  const now = new Date();
+  const dateKey = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
+  const entry = { date: dateKey, timestamp: now.getTime(), mood: selectedMood, energy: selectedEnergy, action: action, discovery: discovery, tomorrow: tomorrow };
+  const oldIndex = entries.findIndex(function (e) { return e.date === dateKey; });
+  if (oldIndex >= 0) entries[oldIndex] = entry; else entries.push(entry);
+  if (!saveJournalEntries(entries)) { status.textContent = "保存失败：浏览器可能禁用了本机存储。请尝试用 Chrome 打开，并确认没有使用无痕模式。"; return; }
+  status.textContent = oldIndex >= 0 ? "今天的记录已更新。" : "今天的记录已保存在这台设备的浏览器中。";
+  renderJournal();
+});
+document.getElementById("exportJournalButton").addEventListener("click", function () {
+  const entries = loadJournalEntries().sort(function(a,b){return a.timestamp-b.timestamp;});
+  if (!entries.length) { document.getElementById("journalStatus").textContent = "目前没有可导出的记录。"; return; }
+  const lines = ["自我地图 · 每日自我观察记录", "导出时间：" + new Date().toLocaleString(), ""];
+  entries.forEach(function(e){ lines.push(e.date + " | 心情 " + e.mood + "/5 | 精力 " + e.energy + "/5", "今天做了什么：" + (e.action || "（未填写）"), "今天的新发现：" + (e.discovery || "（未填写）"), "明天想留意：" + (e.tomorrow || "（未填写）"), ""); });
+  const blob = new Blob([lines.join("\n")], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "自我地图-每日记录.txt";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  document.getElementById("journalStatus").textContent = "已尝试下载 TXT 记录；若未保存，请使用 Chrome 浏览器打开后重试。";
+  setTimeout(function(){URL.revokeObjectURL(url);}, 60000);
+});
+document.getElementById("backupJournalButton").addEventListener("click", function () {
+  const entries = loadJournalEntries();
+  if (!entries.length) { document.getElementById("journalStatus").textContent = "目前没有可备份的记录。"; return; }
+  const payload = { app: "自我地图", version: 1, exportedAt: new Date().toISOString(), entries: entries };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url; link.download = "自我地图-记录备份.json";
+  document.body.appendChild(link); link.click(); link.remove();
+  document.getElementById("journalStatus").textContent = "已尝试导出 JSON 备份。如果手机未保存，请检查浏览器下载列表；恢复时选择这个 JSON 文件。";
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 60000);
+});
+document.getElementById("importJournalButton").addEventListener("click", function () {
+  document.getElementById("importJournalFile").click();
+});
+document.getElementById("importJournalFile").addEventListener("change", function (event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function () {
+    try {
+      const parsed = JSON.parse(String(reader.result || ""));
+      const incoming = Array.isArray(parsed) ? parsed : parsed.entries;
+      if (!Array.isArray(incoming)) throw new Error("备份中没有记录列表");
+      const valid = incoming.filter(function(e) {
+        return isValidJournalEntry(e);
+      }).map(function(e) {
+        return { date:e.date, timestamp:Number(e.timestamp), mood:Number(e.mood), energy:Number(e.energy), action:String(e.action || ""), discovery:String(e.discovery || ""), tomorrow:String(e.tomorrow || "") };
+      });
+      if (!valid.length) throw new Error("没有找到格式正确的记录");
+      if (!confirm("备份中有 " + valid.length + " 条有效记录。确定恢复吗？同日期记录将以备份内容覆盖，其他日期会保留。")) { event.target.value = ""; return; }
+      const merged = loadJournalEntries();
+      valid.forEach(function(entry) {
+        const index = merged.findIndex(function(old){ return old.date === entry.date; });
+        if (index >= 0) merged[index] = entry; else merged.push(entry);
+      });
+      if (!saveJournalEntries(merged)) throw new Error("浏览器无法保存，请检查本机存储设置");
+      document.getElementById("journalStatus").textContent = "恢复完成，已合并 " + valid.length + " 条备份记录。";
+      renderJournal();
+    } catch (error) {
+      document.getElementById("journalStatus").textContent = "恢复失败：" + (error.message || "文件格式不正确");
+    }
+    event.target.value = "";
+  };
+  reader.onerror = function () { document.getElementById("journalStatus").textContent = "无法读取这个文件，请重新选择 JSON 备份。"; event.target.value = ""; };
+  reader.readAsText(file, "UTF-8");
+});
+
+document.getElementById("clearJournalButton").addEventListener("click", function () {
+  if (!confirm("确定清空这台设备浏览器中保存的全部每日记录吗？此操作无法撤销。")) return;
+  try { localStorage.removeItem(JOURNAL_KEY); renderJournal(); document.getElementById("journalStatus").textContent = "本机记录已清空。"; }
+  catch(e) { document.getElementById("journalStatus").textContent = "无法清空记录，请检查浏览器存储设置。"; }
+});
+
+document.getElementById("beginButton").addEventListener("click", function () {
+  showScreen(testScreen);
+  renderQuestion();
+});
+
+
+prevButton.addEventListener("click", function () {
+  if (currentIndex > 0) {
+    currentIndex--;
+    saveTestProgress();
+    renderQuestion();
+    window.scrollTo(0, 0);
+  }
+});
+
+nextButton.addEventListener("click", function () {
+  if (answers[currentIndex] === null) {
+    return;
+  }
+
+  if (currentIndex < questions.length - 1) {
+    currentIndex++;
+    saveTestProgress();
+    renderQuestion();
+    window.scrollTo(0, 0);
+  } else {
+    renderResults();
+    try { localStorage.removeItem(TEST_PROGRESS_KEY); } catch(e) {}
+    showScreen(resultScreen);
+  }
+});
+
+document.getElementById("shareCardButton").addEventListener("click", function () {
+  const scores = calculateDimensionScores();
+  const canvas = document.createElement("canvas");
+  canvas.width = 1080;
+  canvas.height = 1350;
+  const ctx = canvas.getContext("2d");
+
+  if (!ctx) {
+    document.getElementById("shareCardStatus").textContent = "当前浏览器暂时无法生成图片，请尝试使用 Chrome 打开。";
+    return;
+  }
+
+  // 使用纯 Canvas 绘制，不依赖外部图片或网络资源。
+  ctx.fillStyle = "#f5f4ef";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#e5e9df";
+  ctx.beginPath();
+  ctx.arc(930, 135, 210, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#617b65";
+  ctx.font = "600 30px sans-serif";
+  ctx.fillText("SELF EXPLORATION  /  自我地图", 76, 92);
+
+  ctx.fillStyle = "#282e29";
+  ctx.font = "700 66px sans-serif";
+  ctx.fillText("认识自己，", 76, 205);
+  ctx.fillText("不急着定义自己。", 76, 292);
+  ctx.fillStyle = "#777e75";
+  ctx.font = "30px sans-serif";
+  ctx.fillText("这不是给你贴标签，而是一张继续探索的地图。", 76, 358);
+
+  const top = 445;
+  const rowH = 112;
+  scores.forEach(function (score, index) {
+    const def = dimensionDefinitions[index];
+    const side = score >= 60 ? def.a : score <= 40 ? def.b : "相对均衡 · 随情境变化";
+    const y = top + index * rowH;
+
+    ctx.fillStyle = "#fbfaf6";
+    roundRect(ctx, 62, y, 956, 88, 22);
+    ctx.fillStyle = "#282e29";
+    ctx.font = "600 29px sans-serif";
+    ctx.fillText(def.name, 88, y + 37);
+    ctx.fillStyle = "#777e75";
+    ctx.font = "23px sans-serif";
+    ctx.fillText(side, 88, y + 68);
+
+    ctx.fillStyle = "#dedfd5";
+    roundRect(ctx, 690, y + 28, 230, 14, 7);
+    ctx.fillStyle = "#617b65";
+    roundRect(ctx, 690, y + 28, 230 * score / 100, 14, 7);
+    ctx.fillStyle = "#282e29";
+    ctx.font = "700 27px sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText(String(score), 972, y + 40);
+    ctx.textAlign = "left";
+  });
+
+  ctx.fillStyle = "#617b65";
+  ctx.font = "600 28px sans-serif";
+  ctx.fillText("一份阶段性的自我观察", 76, 1185);
+  ctx.fillStyle = "#777e75";
+  ctx.font = "24px sans-serif";
+  ctx.fillText("100 靠近 A 方向 · 0 靠近 B 方向 · 50 相对均衡", 76, 1230);
+  ctx.fillText("分数没有好坏之分 · 自我地图", 76, 1280);
+
+  function roundRect(context, x, y, width, height, radius) {
+    context.beginPath();
+    context.moveTo(x + radius, y);
+    context.arcTo(x + width, y, x + width, y + height, radius);
+    context.arcTo(x + width, y + height, x, y + height, radius);
+    context.arcTo(x, y + height, x, y, radius);
+    context.arcTo(x, y, x + width, y, radius);
+    context.closePath();
+    context.fill();
+  }
+
+  const status = document.getElementById("shareCardStatus");
+  if (!canvas.toBlob) { status.textContent = "当前浏览器不支持图片导出，请使用 Chrome 打开。"; return; }
+  canvas.toBlob(function(blob) {
+    if (!blob) { status.textContent = "图片生成失败，请使用 Chrome 重试。"; return; }
+    if (window.selfMapPreviewUrl) URL.revokeObjectURL(window.selfMapPreviewUrl);
+    const url = URL.createObjectURL(blob);
+    window.selfMapPreviewUrl = url;
+    document.getElementById("shareCardImage").src = url;
+    document.getElementById("shareCardDownload").href = url;
+    document.getElementById("shareCardPreview").style.display = "block";
+    status.textContent = "卡片已生成。可以先预览，再点击“保存图片到手机”。部分 Acode 预览环境可能不支持下载，建议使用 Chrome。";
+  }, "image/png");
+});
+
+document.getElementById("restartButton").addEventListener("click", function () {
+  clearTestProgress();
+  updateTestProgressUI();
+  showScreen(homeScreen);
+});
+</script>
+</body>
+</html>
