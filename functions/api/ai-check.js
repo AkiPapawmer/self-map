@@ -26,41 +26,22 @@ export async function onRequestGet({ env }) {
       responseReceived: Boolean(result?.response)
     });
 
+  
   } catch (error) {
-    const rawMessage = String(error?.message || "");
-    const rawCode = String(error?.code ?? "");
+    const message = String(error?.message || error);
 
-    // 仅返回错误编号及受限的错误类别
-    // 不向公开接口返回完整异常或账户信息
-    const patterns = [
-      ["MODEL", /model|deprecated|not found/i],
-      ["QUOTA", /quota|limit|capacity|exceeded|neurons/i],
-      ["AUTH", /permission|unauthorized|forbidden|auth/i],
-      ["PARAMETER", /invalid|unsupported|parameter|schema/i],
-      ["BILLING", /billing|payment|subscription/i],
-      ["NETWORK", /timeout|network|connection/i]
-    ];
-
-    const category =
-      patterns.find(([, pattern]) => pattern.test(rawMessage))?.[0]
-      || "OTHER";
-
-    // 错误详情仅写入 Cloudflare 内部日志
-    console.error("AI_CHECK_FAILURE", {
-      name: error?.name,
-      code: rawCode,
-      message: rawMessage
-    });
+    console.error("Workers AI diagnostic:", message);
 
     return Response.json({
       ok: false,
-      category,
-      code: /^[0-9]{1,6}$/.test(rawCode)
-        ? rawCode
-        : "UNAVAILABLE",
-      errorName: ["Error", "AIError", "TypeError"].includes(error?.name)
-        ? error.name
-        : "OTHER"
-    }, { status: 502 });
+      errorName: String(error?.name || "Unknown"),
+      errorCode: String(error?.code ?? "none"),
+      errorMessage: message.slice(0, 500)
+    }, {
+      status: 502,
+      headers: {
+        "Cache-Control": "no-store"
+      }
+    });
   }
 }
