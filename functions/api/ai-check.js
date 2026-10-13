@@ -27,29 +27,40 @@ export async function onRequestGet({ env }) {
     });
 
   } catch (error) {
-    const message = String(error?.message || error);
+    const rawMessage = String(error?.message || "");
+    const rawCode = String(error?.code ?? "");
 
-    // 只识别常见错误类别，不公开原始异常内容
-    let reason = "UNKNOWN_MODEL_ERROR";
+    // 仅返回错误编号及受限的错误类别
+    // 不向公开接口返回完整异常或账户信息
+    const patterns = [
+      ["MODEL", /model|deprecated|not found/i],
+      ["QUOTA", /quota|limit|capacity|exceeded|neurons/i],
+      ["AUTH", /permission|unauthorized|forbidden|auth/i],
+      ["PARAMETER", /invalid|unsupported|parameter|schema/i],
+      ["BILLING", /billing|payment|subscription/i],
+      ["NETWORK", /timeout|network|connection/i]
+    ];
 
-    if (/model.*not found|unknown model|invalid model/i.test(message)) {
-      reason = "MODEL_NOT_FOUND";
-    } else if (/quota|limit|capacity|exceeded/i.test(message)) {
-      reason = "QUOTA_OR_CAPACITY";
-    } else if (/unauthorized|permission|forbidden|authentication/i.test(message)) {
-      reason = "PERMISSION_DENIED";
-    } else if (/invalid|unsupported|parameter|schema/i.test(message)) {
-      reason = "INVALID_PARAMETERS";
-    } else if (/timeout|timed out/i.test(message)) {
-      reason = "TIMEOUT";
-    }
+    const category =
+      patterns.find(([, pattern]) => pattern.test(rawMessage))?.[0]
+      || "OTHER";
 
-    console.error("AI_CHECK_FAILURE", message);
+    // 错误详情仅写入 Cloudflare 内部日志
+    console.error("AI_CHECK_FAILURE", {
+      name: error?.name,
+      code: rawCode,
+      message: rawMessage
+    });
 
     return Response.json({
       ok: false,
-      stage: "inference",
-      reason
+      category,
+      code: /^[0-9]{1,6}$/.test(rawCode)
+        ? rawCode
+        : "UNAVAILABLE",
+      errorName: ["Error", "AIError", "TypeError"].includes(error?.name)
+        ? error.name
+        : "OTHER"
     }, { status: 502 });
   }
 }
