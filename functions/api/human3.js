@@ -9,7 +9,7 @@
  * 不需要 OPENAI_API_KEY 或 OPENAI_MODEL。
  */
 
-const MODEL = "@cf/meta/llama-3.1-8b-instruct";
+const MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8";
 
 const SYSTEM = `
 你是《自我地图》人生发展地图模块的自适应访谈引导者。
